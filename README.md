@@ -12,7 +12,7 @@ Included Patches:
 4. MCHC
 5. LPC
 6. RTC
-7. SMBUS
+7. SBUS with BUS0 and BUS1 (Built-in Serial Port Support)
 
 Apply the patch to your extracted DSDT with MaciASL.
 
