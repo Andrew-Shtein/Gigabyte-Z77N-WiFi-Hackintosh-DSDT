@@ -2,9 +2,7 @@
 #
 # This all-in-one DSDT patch with the right Clover EFI Bootloader
 # configuration and generated SSDT should produce a fully compatible
-# Hackintosh running OS X Mavericks.
-#
-# Checkout http://mrengles.com for more details!
+# Hackintosh running OS X Mavericks or Yosemite.
 #
 # Apply the patch to your extracted DSDT with MaciASL.
 #
