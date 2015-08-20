@@ -1,0 +1,7 @@
+# Rename USB 2.0 devices for OS X El Capitan support.
+#
+# For more information about USB and OS X El Capitan visit:
+# http://www.insanelymac.com/forum/topic/306777-guide-usb-fix-el-capitan-1011/
+
+into device label EHC1 set_label begin EH01 end;
+into device label EHC2 set_label begin EH02 end
