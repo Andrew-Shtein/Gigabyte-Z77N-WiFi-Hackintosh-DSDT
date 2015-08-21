@@ -6,11 +6,10 @@ Included Patches:
 
 1. Fixes All Errors & Warnings
 2. Toleda HDMI Audio with Layout-ID 3
-3. USB 3.0 Multiplex with Extra Current (iPad Charging)
-4. MCHC
-5. LPC
-6. RTC
-7. SBUS with BUS0 and BUS1 (Built-in Serial Port Support)
+3. MCHC
+4. LPC
+5. RTC
+6. SBUS with BUS0 and BUS1 (Built-in Serial Port Support)
 
 Apply the patch to your extracted DSDT with MaciASL.
 
