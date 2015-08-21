@@ -1,6 +1,6 @@
 Gigabyte GA-Z77N-WiFi Hackintosh DSDT Patch by Mrengles
 
-This DSDT patch with the right Clover EFI Bootloader configuration and SSDT should produce a fully compatible Hackintosh running OS X Mavericks or Yosemite.
+This DSDT patch with the right Clover EFI Bootloader configuration and SSDT should produce a fully compatible Hackintosh running OS X Mavericks, Yosemite or El Capitan.
 
 Included Patches:
 
