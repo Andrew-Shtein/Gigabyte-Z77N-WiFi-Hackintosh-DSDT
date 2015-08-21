@@ -21,4 +21,10 @@ This patch has only been tested with the following hardware:
 - Intel Core i7-3570K
 - EVGA GeForce GTX 660 Ti
 
+Required Kext extensions for this Motherboard/DSDT combination.
+
+FakeSMC.kext
+FakePCIID.kext
+FakePCIID_XHCIMux.kext
+
 Thanks Toleda, JPalm, and Rehabman for their original works!
