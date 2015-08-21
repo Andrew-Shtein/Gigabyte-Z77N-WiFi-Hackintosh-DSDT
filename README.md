@@ -23,8 +23,8 @@ This patch has only been tested with the following hardware:
 
 Required Kext extensions for this Motherboard/DSDT combination.
 
-FakeSMC.kext
-FakePCIID.kext
-FakePCIID_XHCIMux.kext
+- FakeSMC.kext
+- FakePCIID.kext
+- FakePCIID_XHCIMux.kext
 
 Thanks Toleda, JPalm, and Rehabman for their original works!
