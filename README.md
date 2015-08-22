@@ -26,5 +26,6 @@ Required Kext extensions for this Motherboard/DSDT combination.
 - FakeSMC.kext
 - FakePCIID.kext
 - FakePCIID_XHCIMux.kext
+- RealtekRTL8111.kext
 
 Thanks Toleda, JPalm, and Rehabman for their original works!
