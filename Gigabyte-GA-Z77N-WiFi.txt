@@ -63,7 +63,7 @@ end;
 
 # Add Debug Statement
 into definitionblock code_regex . insert
-begin Store ("Gigabyte GA-Z77N-WiFi Hackintosh DSDT Patch v1.5.1 by Mrengles", Debug)
+begin Store ("Gigabyte GA-Z77N-WiFi Hackintosh DSDT Patch v1.5.2 by Mrengles", Debug)
 end;
 
 # Fix _T_0 -> T_0 Remarks
@@ -166,8 +166,7 @@ begin
 	    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
 	    Return (Package()\n
 	    {\n
-	        "AAPL,snb-platform-id", Buffer() { 0x10, 0x00, 0x03, 0x00 },\n
-	        "AAPL,ig-platform-id", Buffer() { 0x0A, 0x00, 0x66, 0x01 },\n
+	        "AAPL,ig-platform-id", Buffer() { 0x07, 0x00, 0x62, 0x01 },\n
 	        "hda-gfx", Buffer() { "onboard-1" },\n
 	    })\n
 	}\n
