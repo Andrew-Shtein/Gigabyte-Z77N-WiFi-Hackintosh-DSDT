@@ -182,6 +182,7 @@ begin
 	    Return (Package()\n
 	    {\n
                 "layout-id", Buffer() { 0x03, 0x00, 0x00, 0x00 },\n
+                "MaximumBootBeepVolume", Buffer (One) { 0x4D },\n
                 "PinConfigurations", Buffer(Zero) {},\n
   	        "hda-gfx", Buffer() { "onboard-1" },\n
 	    })\n
