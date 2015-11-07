@@ -1,0 +1,71 @@
+# Rename USB 2.0/3.0 devices for OS X El Capitan support, also injects power settings.
+#
+# For more information about USB and OS X El Capitan visit:
+# http://www.insanelymac.com/forum/topic/306777-guide-usb-fix-el-capitan-1011/
+
+into device label EHC1 set_label begin EH01 end;
+into device label EHC2 set_label begin EH02 end;
+into device label XHC1 set_label begin XHC end;
+into_all all code_regex EHC1 replaceall_matched begin EH01 end;
+into_all all code_regex EHC2 replaceall_matched begin EH02 end;
+into_all all code_regex XHC1 replaceall_matched begin XHC end;
+
+# Fix EH01 USB 2.0
+into method label _DSM parent_label EH01 remove_entry;
+into device label EH01 insert begin
+Method (_DSM, 4, NotSerialized)\n
+{\n
+    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+    Return (Package()\n
+    {\n
+    "AAPL,clock-id", Buffer() { 0x01 },\n
+		"AAPL,current-available", 0x0834,\n
+		"AAPL,current-extra", 0x0A8C,\n
+		"AAPL,current-extra-in-sleep", 0x0834,\n
+		"AAPL,current-in-sleep", 0x03E8,\n
+		"AAPL,max-port-current-in-sleep", 0x0A8C,\n
+		"AAPL,device-internal", 0x02,\n
+    "built-in", Buffer() { 0x01 },\n
+    })\n
+}\n
+end;
+
+# Fix EH02 USB 2.0
+into method label _DSM parent_label EH02 remove_entry;
+into device label EH02 insert begin
+Method (_DSM, 4, NotSerialized)\n
+{\n
+    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+    Return (Package()\n
+    {\n
+    "AAPL,clock-id", Buffer() { 0x01 },\n
+		"AAPL,current-available", 0x0834,\n
+		"AAPL,current-extra", 0x0A8C,\n
+		"AAPL,current-extra-in-sleep", 0x0834,\n
+		"AAPL,current-in-sleep", 0x03E8,\n
+		"AAPL,max-port-current-in-sleep", 0x0A8C,\n
+		"AAPL,device-internal", 0x02,\n
+    "built-in", Buffer() { 0x01 },\n
+    })\n
+}\n
+end;
+
+# Fix XHC USB 3.0
+into method label _DSM parent_label XHC remove_entry;
+into device label XHC insert begin
+Method (_DSM, 4, NotSerialized)\n
+{\n
+    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+    Return (Package()\n
+    {\n
+    "AAPL,clock-id", Buffer() { 0x02 },\n
+		"AAPL,current-available", 0x0834,\n
+		"AAPL,current-extra", 0x0A8C,\n
+		"AAPL,current-extra-in-sleep", 0x0834,\n
+		"AAPL,current-in-sleep", 0x03E8,\n
+		"AAPL,max-port-current-in-sleep", 0x0A8C,\n
+		"AAPL,device-internal", 0x02,\n
+    "built-in", Buffer() { 0x01 },\n
+    })\n
+}\n
+end;
