@@ -1,8 +1,8 @@
-# Gigabyte GA-Z77N-WiFi Hackintosh DSDT Patch by Mrengles
+# Gigabyte GA-Z77N-WiFi Patched DSDT by Mrengles
 #
-# This all-in-one DSDT patch with the right Clover EFI Bootloader
-# configuration and generated SSDT should produce a fully compatible
-# Hackintosh running OS X Mavericks or Yosemite.
+# This all-in-one DSDT patch with the right Clover EFI Bootloader or Ozmosis Bootloader
+# configuration and generated SSDT should produce a fully compatible Hackintosh running
+# OS X Mavericks, OS X Yosemite and/or OS X El Capitan.
 #
 # Apply the patch to your extracted DSDT with MaciASL.
 #
@@ -16,43 +16,228 @@
 #
 # Required Kext extensions for this Motherboard/DSDT combination.
 #
-# FakeSMC.kext
 # FakePCIID.kext
 # FakePCIID_XHCIMux.kext
+# FakeSMC.kext
 # RealtekRTL8111.kext
 #
-# Thanks Toleda, JPalm, and Rehabman for their original DSDT work!
-#-----------------------------------------------------------------------
+# Thanks Toleda, JPalm, Rehabman and others for their original DSDT work!
+#------------------------------------------------------------------------
 
+# Add Debug
+into definitionblock code_regex . insert begin
+Store ("ASRock Fatal1ty Z77 Professional-M Patched DSDT v5.1.4 by Mrengles", Debug)\n
+end;
 
-# Add DTGP (Required for ACPI injection)
-into method label DTGP remove_entry;
-into definitionblock code_regex . insert
+# Remove all _DSM methods
+into_all method label _DSM remove_entry;
+
+# Change _T_0 -> T_0 
+into device label _T_0 set_label begin T_0 end;
+into device label _T_1 set_label begin T_1 end;
+into device label _T_2 set_label begin T_2 end;
+into device label _T_3 set_label begin T_3 end;
+into device label _T_4 set_label begin T_4 end;
+into device label _T_5 set_label begin T_5 end;
+into device label _T_6 set_label begin T_6 end;
+into device label _T_7 set_label begin T_7 end;
+into device label _T_8 set_label begin T_8 end;
+into device label _T_9 set_label begin T_9 end;
+into_all all code_regex _T_0 replaceall_matched begin T_0 end;
+into_all all code_regex _T_1 replaceall_matched begin T_1 end;
+into_all all code_regex _T_2 replaceall_matched begin T_2 end;
+into_all all code_regex _T_3 replaceall_matched begin T_3 end;
+into_all all code_regex _T_4 replaceall_matched begin T_4 end;
+into_all all code_regex _T_5 replaceall_matched begin T_5 end;
+into_all all code_regex _T_6 replaceall_matched begin T_6 end;
+into_all all code_regex _T_7 replaceall_matched begin T_7 end;
+into_all all code_regex _T_8 replaceall_matched begin T_8 end;
+into_all all code_regex _T_9 replaceall_matched begin T_9 end;
+
+# Qword field fix
+into method label _CRS parent_label PCI0 code_regex CreateDWordField\s\(BUF0,\s\\_SB.PCI0._Y0F._LEN,\sMSLN\) replace_matched begin CreateQWordField (BUF0, \\_SB.PCI0._Y0F._LEN, MSLN) end;
+into method label _CRS parent_label PCI0 code_regex CreateDWordField\s\(BUF0,\s\\_SB.PCI0._Y0F._LEN,\sM4LN\) replace_matched begin CreateQWordField (BUF0, \\_SB.PCI0._Y0F._LEN, M4LN) end;
+
+# MUT0 warning fix
+into_all all code_regex (Acquire\s\(MUT0,\s0x)....\) replace_matched begin Acquire (MUT0, 0xFFFF) end;
+
+# _HID name fix
+into_all all code_regex (Name\s\(_HID,\s"ABCDEFGH") replace_matched begin Name (_HID, EisaId ("PNP0C15") end;
+
+# Fix non-hex caps
+into_all all code_regex pnp0c14 replaceall_matched begin PNP0C14 end;
+
+# Fix TCMF
+into_all all code_regex If\s\(TCMF\)\s\{\} replace_matched begin 
+If (TCMF)\n
+{\n
+	Return (Zero)\n
+}\n
+end;
+
+# Fix the Min/Max/Len/Gran are all zero error
+into device label SIO1 code_regex 0x00(,\s+//\s+L) replaceall_matched begin 0x01%1 end;
+
+# Fix IO (Decode…_length_0
+into_all all code_regex 0x00,(\s+)//\sLength replaceall_matched begin 0x01,%1// Length
+end;
+
+# Fix the 'Possible operator timeout is ignored' error
+into_all all code_regex (Acquire\s\(....,\s0x)....\) replace_matched begin %1FFFF) end;
+
+# Fix USB
+into_all all code_regex (Name\s*\(_PLD,\s*)Buffer(\s\(0x10\)[^\)]*) replaceall_matched begin %1Package(0x01) { Buffer%2} end;
+
+# Remove WMI
+into device name_hid PNP0C14 remove_entry;
+into device name_hid pnp0c14 remove_entry;
+
+# Replace Names
+into device label MCH set_label begin MCEH end;
+into device label PIC set_label begin IPIC end;
+into device label DMAD set_label begin DMAC end;
+into device label TMR set_label begin TIMR end;
+into device label RTC0 set_label begin RTC end;
+into device label COPR set_label begin MATH end;
+into device label OMSC set_label begin LDRC end;
+into device label CHN0 set_label begin PRT0 end;
+into device label CHN1 set_label begin PRT1 end;
+into device label EUSB set_label begin EHCI end;
+into device label USBE set_label begin UCHI end;
+into device label USB0 set_label begin UHC1 end;
+into device label USB1 set_label begin UHC2 end;
+into device label USB2 set_label begin UHC3 end;
+into device label USB3 set_label begin UHC4 end;
+into device label USB4 set_label begin UHC5 end;
+into device label USB5 set_label begin UHC6 end;
+into device label USB6 set_label begin UHC7 end;
+into device label USB7 set_label begin UHC8 end;
+into_all all code_regex DMAD replaceall_matched begin DMAC end;
+into_all all code_regex TMR replaceall_matched begin TIMR end;
+into_all all code_regex RTC0 replaceall_matched begin RTC end;
+into_all all code_regex COPR replaceall_matched begin MATH end;
+into_all all code_regex OMSC replaceall_matched begin LDRC end;
+into_all all code_regex CHN0 replaceall_matched begin PRT0 end;
+into_all all code_regex CHN1 replaceall_matched begin PRT1 end;
+into_all all code_regex EUSB replaceall_matched begin EHCI end;
+into_all all code_regex USBE replaceall_matched begin UCHI end;
+into_all all code_regex USB0 replaceall_matched begin UHC1 end;
+into_all all code_regex USB1 replaceall_matched begin UHC2 end;
+into_all all code_regex USB2 replaceall_matched begin UHC3 end;
+into_all all code_regex USB3 replaceall_matched begin UHC4 end;
+into_all all code_regex USB4 replaceall_matched begin UHC5 end;
+into_all all code_regex USB5 replaceall_matched begin UHC6 end;
+into_all all code_regex USB6 replaceall_matched begin UHC7 end;
+into_all all code_regex USB7 replaceall_matched begin UHC8 end;
+
+# Add MCHC
+into device label MCHC remove_entry;
+into device label PCI0 insert begin
+Device (MCHC)\n
+{\n
+Name (_ADR, Zero)\n
+}\n
+end;
+
+# Add IMEI
+into device label IMEI parent_label PCI0 remove_entry;
+into device label PCI0 insert
 begin
+Device (IMEI)\n
+{\n
+Name (_ADR, 0x00160000)\n
+}\n
+end;
+
+# Fix the LPC Device
+into method label _DSM parent_label LPCB remove_entry;
+into device label LPCB insert begin
+Method (_DSM, 4, NotSerialized)\n
+{\n
+    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+    Return (Package()\n
+    {\n
+        "compatible", Buffer () {"pci8086,1e44"},\n
+        "device-id", Buffer (0x04) { 0x44, 0x1E, 0x00, 0x00 }\n
+	})\n
+}\n
+end;
+
+# Fix HPET
+into method label _STA parent_hid PNP0103 remove_entry;
+into device name_hid PNP0103 code_regex Name\s\(_STA\,\s+0x0F\) remove_matched;
+into device name_hid PNP0103 insert
+begin
+Name (_STA, 0x0F)\n
+end;
+
+into method label _CRS parent_hid PNP0103 remove_entry;
+into device name_hid PNP0103 insert
+begin
+Method (_CRS, 0, NotSerialized)\n
+{\n
+	Return (BUF0)\n
+}\n
+end;
+
+# Fix IRQ
+into device name_hid PNP0000 code_regex IRQNoFlags\s\(\)\n\s+\{(\d+)\} remove_matched;
+into device name_hid PNP0100 code_regex IRQNoFlags\s\(\)\n\s+\{(\d+)\} remove_matched;
+into device name_hid PNP0B00 code_regex IRQNoFlags\s\(\)\n\s+\{(\d+)\} remove_matched;
+into device name_hid PNP0103 code_regex IRQNoFlags\s\(\)\n\s+\{.*\} removeall_matched;
+into device name_hid PNP0103 code_regex Name\s\(([^,]+),\sResourceTemplate\s\(\).*\n\s+\{((?:.|\n)*)\}\) replace_matched
+begin
+Name (%1, ResourceTemplate()\n
+{\n
+    IRQNoFlags() { 0, 8, 11, 15 }\n
+%2
+})\n
+end;
+
+# Fix Mutex
+into_all all code_regex Mutex\s+\(([^,]*),\s+[^)]*\) replaceall_matched begin Mutex(%1, 0) end;
+into_all all code_regex Mutex\s+\(([^,]*),\s+[^)]*\) replaceall_matched begin Mutex(%1, 0) end;
+into_all all code_regex Mutex\s+\(([^,]*),\s+[^)]*\) replaceall_matched begin Mutex(%1, 0) end;
+into_all all code_regex Mutex\s+\(([^,]*),\s+[^)]*\) replaceall_matched begin Mutex(%1, 0) end;
+into_all all code_regex Mutex\s+\(([^,]*),\s+[^)]*\) replaceall_matched begin Mutex(%1, 0) end;
+into_all all code_regex Mutex\s+\(([^,]*),\s+[^)]*\) replaceall_matched begin Mutex(%1, 0) end;
+into_all all code_regex Mutex\s+\(([^,]*),\s+[^)]*\) replaceall_matched begin Mutex(%1, 0) end;
+into_all all code_regex Mutex\s+\(([^,]*),\s+[^)]*\) replaceall_matched begin Mutex(%1, 0) end;
+into_all all code_regex Mutex\s+\(([^,]*),\s+[^)]*\) replaceall_matched begin Mutex(%1, 0) end;
+into_all all code_regex Mutex\s+\(([^,]*),\s+[^)]*\) replaceall_matched begin Mutex(%1, 0) end;
+
+# Fix PNOT/PPNT/PNTF
+into method label PNOT replace_content begin // nothing end;
+into method label PPNT replace_content begin // nothing end;
+into method label PNTF replace_content begin // nothing end;
+
+# Add DTGP
+into method label DTGP remove_entry;
+into definitionblock code_regex . insert begin
 Method (DTGP, 5, NotSerialized)\n
 {\n
-    If (LEqual (Arg0, Buffer (0x10)\n
-            {\n
-                /* 0000 */ 0xC6, 0xB7, 0xB5, 0xA0, 0x18, 0x13, 0x1C, 0x44,\n
-                /* 0008 */ 0xB0, 0xC9, 0xFE, 0x69, 0x5E, 0xAF, 0x94, 0x9B\n
-            }))\n
+If (LEqual (Arg0, Buffer (0x10)\n
     {\n
-        If (LEqual (Arg1, One))\n
+        /* 0000 */    0xC6, 0xB7, 0xB5, 0xA0, 0x18, 0x13, 0x1C, 0x44,\n
+        /* 0008 */    0xB0, 0xC9, 0xFE, 0x69, 0x5E, 0xAF, 0x94, 0x9B\n
+    }))\n
+{\n
+    If (LEqual (Arg1, One))\n
+    {\n
+        If (LEqual (Arg2, Zero))\n
         {\n
-            If (LEqual (Arg2, Zero))\n
-            {\n
-                Store (Buffer (One)\n
-                    {\n
-                        0x03\n
-                    }, Arg4)\n
-                Return (One)\n
-            }\n
-            If (LEqual (Arg2, One))\n
-            {\n
-                Return (One)\n
-            }\n
+            Store (Buffer (One)\n
+                {\n
+                    0x03\n
+                }, Arg4)\n
+            Return (One)\n
+        }\n
+        If (LEqual (Arg2, One))\n
+        {\n
+            Return (One)\n
         }\n
     }\n
+}\n
     Store (Buffer (One)\n
         {\n
             0x00\n
@@ -61,85 +246,127 @@ Method (DTGP, 5, NotSerialized)\n
 }\n
 end;
 
-# Add Debug Statement
-into definitionblock code_regex . insert
-begin Store ("Gigabyte GA-Z77N-WiFi Hackintosh DSDT Patch v1.5.2 by Mrengles", Debug)
-end;
-
-# Fix _T_0 -> T_0 Remarks
-into_all all code_regex _T_0 replaceall_matched begin T_0 end;
-into_all all code_regex _T_1 replaceall_matched begin T_1 end;
-into_all all code_regex _T_2 replaceall_matched begin T_2 end;
-into_all all code_regex _T_3 replaceall_matched begin T_3 end;
-into_all all code_regex _T_4 replaceall_matched begin T_4 end;
-into_all all code_regex _T_5 replaceall_matched begin T_5 end;
-into_all all code_regex _T_6 replaceall_matched begin T_6 end;
-
-# Fix QWordField Error
-into method label _CRS parent_label PCI0 code_regex CreateDWordField\s\(BUF0,\s\\_SB.PCI0._Y0F._LEN,\sMSLN\) replace_matched begin CreateQWordField (BUF0, \\_SB.PCI0._Y0F._LEN, MSLN) end;
-into method label _CRS parent_label PCI0 code_regex CreateDWordField\s\(BUF0,\s\\_SB.PCI0._Y0F._LEN,\sM4LN\) replace_matched begin CreateQWordField (BUF0, \\_SB.PCI0._Y0F._LEN, M4LN) end;
-
-# Fix MUT0 Warning
-into_all all code_regex (Acquire\s\(MUT0,\s0x)....\) replace_matched begin Acquire (MUT0, 0xFFFF) end;
-
-# Fix _HID Name
-into_all all code_regex (Name\s\(_HID,\s"ABCDEFGH") replace_matched begin Name (_HID, EisaId ("PNP0C15") end;
-
-# Fix Non-Hex Caps
-into_all all code_regex pnp0c14 replaceall_matched begin PNP0C14 end;
-
-# Fix TCMF
-into_all all code_regex If\s\(TCMF\)\s\{\} replace_matched begin 
-If (TCMF)\n
+# Add SMBUS (Required for proper kext loading)
+into device label BUS0 parent_adr 0x001F0003 remove_entry;
+into device name_adr 0x001F0003 insert begin
+Device (BUS0)\n
 {\n
-    Return (Zero)\n
+    Name (_CID, "smbus")\n
+    Name (_ADR, Zero)\n
+}\n
+Device (BUS1)\n
+{\n
+    Name (_CID, "smbus")\n
+    Name (_ADR, One)\n
 }\n
 end;
 
-# Fix Min/Max/Len/Gran All Zero Error
-into device label SIO1 code_regex 0x00(,\s+//\s+L) replaceall_matched begin 0x01%1 end;
+# Rename USB 2.0 and 3.0 for OS X El Capitan Support
+into device label EHC1 set_label begin EH01 end;
+into device label EHC2 set_label begin EH02 end;
+into device label XHC1 set_label begin XHC end;
+into_all all code_regex EHC1 replaceall_matched begin EH01 end;
+into_all all code_regex EHC2 replaceall_matched begin EH02 end;
+into_all all code_regex XHC1 replaceall_matched begin XHC end;
 
-# Fix IO (Decode…_length_0
-into_all all code_regex 0x00,(\s+)//\sLength replaceall_matched begin 0x01,%1// Length
+# Fix EH01 USB 2.0
+into method label _DSM parent_label EH01 remove_entry;
+into device label EH01 insert begin
+Method (_DSM, 4, NotSerialized)\n
+{\n
+    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+    Return (Package()\n
+    {\n
+        "AAPL,clock-id", Buffer() { 0x01 },\n
+        "AAPL,current-available", 0x0834,\n
+        "AAPL,current-extra", 0x0A8C,\n
+        "AAPL,current-extra-in-sleep", 0x0834,\n
+        "AAPL,current-in-sleep", 0x03E8,\n
+        "AAPL,max-port-current-in-sleep", 0x0A8C,\n
+        "AAPL,device-internal", 0x02,\n
+        "built-in", Buffer() { 0x01 }\n
+    })\n
+}\n
 end;
 
-# Fix Possible Operator Timeout Error
-into_all all code_regex (Acquire\s\(....,\s0x)....\) replace_matched begin %1FFFF) end;
+# Fix EH02 USB 2.0
+into method label _DSM parent_label EH02 remove_entry;
+into device label EH02 insert begin
+Method (_DSM, 4, NotSerialized)\n
+{\n
+    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+    Return (Package()\n
+    {\n
+        "AAPL,clock-id", Buffer() { 0x01 },\n
+        "AAPL,current-available", 0x0834,\n
+        "AAPL,current-extra", 0x0A8C,\n
+        "AAPL,current-extra-in-sleep", 0x0834,\n
+        "AAPL,current-in-sleep", 0x03E8,\n
+        "AAPL,max-port-current-in-sleep", 0x0A8C,\n
+        "AAPL,device-internal", 0x02,\n
+        "built-in", Buffer() { 0x01 }\n
+    })\n
+}\n
+end;
 
-# Remove Device PEGP
+# Fix XHC USB 3.0
+into method label _DSM parent_label XHC remove_entry;
+into device label XHC insert begin
+Method (_DSM, 4, NotSerialized)\n
+{\n
+    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+    Return (Package()\n
+    {\n
+        "AAPL,clock-id", Buffer() { 0x02 },\n
+        "AAPL,current-available", 0x0834,\n
+        "AAPL,current-extra", 0x0A8C,\n
+        "AAPL,current-extra-in-sleep", 0x0834,\n
+        "AAPL,current-in-sleep", 0x03E8,\n
+        "AAPL,max-port-current-in-sleep", 0x0A8C,\n
+        "AAPL,device-internal", 0x02,\n
+        "built-in", Buffer() { 0x01 }\n
+    })\n
+}\n
+end;
+
+# Remove PEGP
 into device label PEGP remove_entry;
+into scope label _SB.PCI0.PEG0.PEGP remove_entry;
+into_all all code_regex Notify\s\(\\_SB.PCI0.PEG0.PEGP,\s0x.*\) removeall_matched;
 
-# Rename GFX0 Devices -> IGPU
+# Rename GFX0 -> IGPU
 into device label GFX0 set_label begin IGPU end;
 into_all all code_regex GFX0 replaceall_matched begin IGPU end;
 into scope label _SB.PCI0.GFX0 set_label begin _SB.PCI0.IGPU end;
 into scope label \_SB.PCI0.GFX0 set_label begin \_SB.PCI0.IGPU end;
+into scope label _SB.PCI0.PEG0.GFX0 set_label begin _SB.PCI0.PEGP.IGPU end;
 
-# Rename Device PEG0 -> PEGP
-into scope label _SB.PCI0.PEG0.PEGP set_label begin _SB.PCI0.PEGP.GFX0 end;
-into_all all code_regex PEGP replaceall_matched begin GFX0 end;
+# Rename PEG0 -> PEGP
 into device label PEG0 set_label begin PEGP end;
-into scope label _SB.PCI0.PEG0 set_label begin _SB.PCI0.PEGP end;
 into_all all code_regex PEG0 replaceall_matched begin PEGP end;
+into scope label _SB.PCI0.PEG0 set_label begin _SB.PCI0.PEGP end;
+into scope label \_SB.PCI0.PEG0 set_label begin \_SB.PCI0.PEGP end;
 
-# Add Device GFX0 and Device HDAU
+# Add NVIDIA/AMD HDMI Audio
 into method label _DSM parent_adr 0x00010000 remove_entry;
-into device name_adr 0x00010000 insert
-begin
+into device name_adr 0x00010000 insert begin
 Device (GFX0)\n
 {\n
     Name (_ADR, Zero)\n
-    Name (_SUN, One)\n
     Method (_DSM, 4, NotSerialized)\n
     {\n
 	    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
 	    Return (Package()\n
-            {\n
-                "@0,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
-                "@1,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
-                "@2,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
-                "@3,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
-                "hda-gfx", Buffer() { "onboard-2" },\n
+        {\n
+            "@0,AAPL,boot-display", Buffer (Zero) {},\n
+            "@0,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
+            "@1,AAPL,boot-display", Buffer (Zero) {},\n
+            "@1,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
+            "@2,AAPL,boot-display", Buffer (Zero) {},\n
+            "@2,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
+            "@3,AAPL,boot-display", Buffer (Zero) {},\n
+            "@3,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
+            "hda-gfx", Buffer() { "onboard-2" }\n
 	    })\n
     }\n
 }\n
@@ -150,89 +377,38 @@ Device (HDAU)\n
     {\n
 	    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
 	    Return (Package()\n
-            {\n
-               "hda-gfx", Buffer() { "onboard-2" },\n
+        {\n
+            "hda-gfx", Buffer() { "onboard-2" }\n
 	    })\n
     }\n
 }\n
 end;
 
-# Add HDMI Audio Injection For Device IGPU
+# Add Airplay Display Support
 into method label _DSM parent_adr 0x00020000 remove_entry;
-into device name_adr 0x00020000 insert
-begin
-	Method (_DSM, 4, NotSerialized)\n
-	{\n
-	    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
-	    Return (Package()\n
-	    {\n
-	        "AAPL,ig-platform-id", Buffer() { 0x07, 0x00, 0x62, 0x01 },\n
-	        "hda-gfx", Buffer() { "onboard-1" },\n
-	    })\n
-	}\n
-end;
-
-# Add HDMI Audio Injection For Device HDEF (Default audio Layout-ID 3)
-into method label _DSM parent_adr 0x001B0000 remove_entry;
-into device name_adr 0x001B0000 insert
-begin
+into device name_adr 0x00020000 insert begin
     Method (_DSM, 4, NotSerialized)\n
     {\n
 	    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
 	    Return (Package()\n
 	    {\n
-                "layout-id", Buffer() { 0x03, 0x00, 0x00, 0x00 },\n
-                "MaximumBootBeepVolume", Buffer (One) { 0x4D },\n
-                "PinConfigurations", Buffer(Zero) {},\n
-  	        "hda-gfx", Buffer() { "onboard-1" },\n
+            "AAPL,ig-platform-id", Buffer() { 0x07, 0x00, 0x62, 0x01 },\n
+            "device-id", Buffer() { 0x66, 0x01, 0x00, 0x00 }\n
 	    })\n
     }\n
 end;
 
-# Add MCHC
-into device label MCHC parent_label PCI0 remove_entry;
-into device label PCI0 insert begin
-Device (MCHC)\n
-{\n
-	Name (_ADR, Zero)\n
-}
-end;
-
-# Add SMBUS (Required for proper kext loading)
-into device label BUS0 parent_adr 0x001F0003 remove_entry;
-into device name_adr 0x001F0003 insert
-begin
-Device (BUS0)\n
-{\n
-    Name (_CID, "smbus")\n
-    Name (_ADR, Zero)\n
-    Device (DVL0)\n
+# Add Layout-ID 3 Audio Support
+into method label _DSM parent_adr 0x001B0000 remove_entry;
+into device name_adr 0x001B0000 insert begin
+    Method (_DSM, 4, NotSerialized)\n
     {\n
-        Name (_ADR, 0x57)\n
-        Name (_CID, "diagsvault")\n
-        Method (_DSM, 4, NotSerialized)\n
-        {\n
-            If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
-            Return (Package() { "address", 0x57 })\n
-        }\n
+	    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+	    Return (Package()\n
+	    {\n
+            "layout-id", Buffer() { 0x03, 0x00, 0x00, 0x00 },\n
+            "MaximumBootBeepVolume", Buffer (One) { 0x4D },\n
+            "PinConfigurations", Buffer(Zero) {}\n
+	    })\n
     }\n
-}\n
-end;
-
-# Add LPCB
-into method label _DSM parent_label LPCB remove_entry;
-into device label LPCB insert begin
-Method (_DSM, 4, NotSerialized)\n
-{\n
-	Store (Package (0x02) {\n
-		"device-id", Buffer (0x04) {0x44,0x1E,0x00,0x00}\n
-	}, Local0)\n
-	DTGP (Arg0, Arg1, Arg2, Arg3, RefOf (Local0))\n
-	Return (Local0)\n
-}
-end;
-
-# Fix RTC (Prevents BIOS/UEFI resets)
-into device name_hid PNP0B00 code_regex (IO\s\((?:\s*[^,]+,\s*(?:\/\/\s.*)?\s*\n)+\s*)(\dx\d+)(,\s*(?:\/\/\s.*)?\s*\n\s*\)) replace_matched
-begin %10x02%3
 end
