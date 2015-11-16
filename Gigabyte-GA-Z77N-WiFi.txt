@@ -26,7 +26,7 @@
 
 # Add Debug
 into definitionblock code_regex . insert begin
-Store ("ASRock Fatal1ty Z77 Professional-M Patched DSDT v5.1.4 by Mrengles", Debug)\n
+Store ("Gigabyte GA-Z77N-WiFi Patched DSDT v5.1.4 by Mrengles", Debug)\n
 end;
 
 # Remove all _DSM methods
