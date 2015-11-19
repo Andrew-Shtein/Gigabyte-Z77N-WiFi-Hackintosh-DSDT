@@ -26,8 +26,7 @@
 
 # Add Debug
 into definitionblock code_regex . insert begin
-Store ("Gigabyte GA-Z77N-WiFi Patched DSDT v5.1.4 by Mrengles", Debug)\n
-end;
+Store ("Gigabyte GA-Z77N-WiFi Patched DSDT v5.1.4 by Mrengles", Debug)\n end;
 
 # Remove all _DSM methods
 into_all method label _DSM remove_entry;
@@ -135,17 +134,16 @@ into device label MCHC remove_entry;
 into device label PCI0 insert begin
 Device (MCHC)\n
 {\n
-Name (_ADR, Zero)\n
+	Name (_ADR, Zero)\n
 }\n
 end;
 
 # Add IMEI
 into device label IMEI parent_label PCI0 remove_entry;
-into device label PCI0 insert
-begin
+into device label PCI0 insert begin
 Device (IMEI)\n
 {\n
-Name (_ADR, 0x00160000)\n
+	Name (_ADR, 0x00160000)\n
 }\n
 end;
 
@@ -154,11 +152,11 @@ into method label _DSM parent_label LPCB remove_entry;
 into device label LPCB insert begin
 Method (_DSM, 4, NotSerialized)\n
 {\n
-    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
-    Return (Package()\n
-    {\n
-        "compatible", Buffer () {"pci8086,1e44"},\n
-        "device-id", Buffer (0x04) { 0x44, 0x1E, 0x00, 0x00 }\n
+	If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+	Return (Package()\n
+	{\n
+		"compatible", Buffer () {"pci8086,1e44"},\n
+		"device-id", Buffer (0x04) { 0x44, 0x1E, 0x00, 0x00 }\n
 	})\n
 }\n
 end;
@@ -176,7 +174,7 @@ into device name_hid PNP0103 insert
 begin
 Method (_CRS, 0, NotSerialized)\n
 {\n
-	Return (BUF0)\n
+Return (BUF0)\n
 }\n
 end;
 
@@ -189,7 +187,7 @@ into device name_hid PNP0103 code_regex Name\s\(([^,]+),\sResourceTemplate\s\(\)
 begin
 Name (%1, ResourceTemplate()\n
 {\n
-    IRQNoFlags() { 0, 8, 11, 15 }\n
+IRQNoFlags() { 0, 8, 11, 15 }\n
 %2
 })\n
 end;
@@ -217,32 +215,32 @@ into definitionblock code_regex . insert begin
 Method (DTGP, 5, NotSerialized)\n
 {\n
 If (LEqual (Arg0, Buffer (0x10)\n
-    {\n
-        /* 0000 */    0xC6, 0xB7, 0xB5, 0xA0, 0x18, 0x13, 0x1C, 0x44,\n
-        /* 0008 */    0xB0, 0xC9, 0xFE, 0x69, 0x5E, 0xAF, 0x94, 0x9B\n
-    }))\n
 {\n
-    If (LEqual (Arg1, One))\n
-    {\n
-        If (LEqual (Arg2, Zero))\n
-        {\n
-            Store (Buffer (One)\n
-                {\n
-                    0x03\n
-                }, Arg4)\n
-            Return (One)\n
-        }\n
-        If (LEqual (Arg2, One))\n
-        {\n
-            Return (One)\n
-        }\n
-    }\n
+/* 0000 */    0xC6, 0xB7, 0xB5, 0xA0, 0x18, 0x13, 0x1C, 0x44,\n
+/* 0008 */    0xB0, 0xC9, 0xFE, 0x69, 0x5E, 0xAF, 0x94, 0x9B\n
+}))\n
+{\n
+If (LEqual (Arg1, One))\n
+{\n
+If (LEqual (Arg2, Zero))\n
+{\n
+Store (Buffer (One)\n
+{\n
+0x03\n
+}, Arg4)\n
+Return (One)\n
 }\n
-    Store (Buffer (One)\n
-        {\n
-            0x00\n
-        }, Arg4)\n
-    Return (Zero)\n
+If (LEqual (Arg2, One))\n
+{\n
+Return (One)\n
+}\n
+}\n
+}\n
+Store (Buffer (One)\n
+{\n
+0x00\n
+}, Arg4)\n
+Return (Zero)\n
 }\n
 end;
 
@@ -251,17 +249,16 @@ into device label BUS0 parent_adr 0x001F0003 remove_entry;
 into device name_adr 0x001F0003 insert begin
 Device (BUS0)\n
 {\n
-    Name (_CID, "smbus")\n
-    Name (_ADR, Zero)\n
+	Name (_CID, "smbus")\n
+	Name (_ADR, Zero)\n
 }\n
 Device (BUS1)\n
 {\n
-    Name (_CID, "smbus")\n
-    Name (_ADR, One)\n
+	Name (_CID, "smbus")\n
+	Name (_ADR, One)\n
 }\n
 end;
 
-# Rename USB 2.0 and 3.0 for OS X El Capitan Support
 into device label EHC1 set_label begin EH01 end;
 into device label EHC2 set_label begin EH02 end;
 into device label XHC1 set_label begin XHC end;
@@ -274,18 +271,18 @@ into method label _DSM parent_label EH01 remove_entry;
 into device label EH01 insert begin
 Method (_DSM, 4, NotSerialized)\n
 {\n
-    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
-    Return (Package()\n
-    {\n
-        "AAPL,clock-id", Buffer() { 0x01 },\n
-        "AAPL,current-available", 0x0834,\n
-        "AAPL,current-extra", 0x0A8C,\n
-        "AAPL,current-extra-in-sleep", 0x0834,\n
-        "AAPL,current-in-sleep", 0x03E8,\n
-        "AAPL,max-port-current-in-sleep", 0x0A8C,\n
-        "AAPL,device-internal", 0x02,\n
-        "built-in", Buffer() { 0x01 }\n
-    })\n
+	If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+	Return (Package()\n
+	{\n
+		"AAPL,clock-id", Buffer() { 0x01 },\n
+		"AAPL,current-available", 0x0834,\n
+		"AAPL,current-extra", 0x0A8C,\n
+		"AAPL,current-extra-in-sleep", 0x0834,\n
+		"AAPL,current-in-sleep", 0x03E8,\n
+		"AAPL,max-port-current-in-sleep", 0x0A8C,\n
+		"AAPL,device-internal", 0x02,\n
+		"built-in", Buffer() { 0x01 },\n
+	})\n
 }\n
 end;
 
@@ -294,18 +291,18 @@ into method label _DSM parent_label EH02 remove_entry;
 into device label EH02 insert begin
 Method (_DSM, 4, NotSerialized)\n
 {\n
-    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
-    Return (Package()\n
-    {\n
-        "AAPL,clock-id", Buffer() { 0x01 },\n
-        "AAPL,current-available", 0x0834,\n
-        "AAPL,current-extra", 0x0A8C,\n
-        "AAPL,current-extra-in-sleep", 0x0834,\n
-        "AAPL,current-in-sleep", 0x03E8,\n
-        "AAPL,max-port-current-in-sleep", 0x0A8C,\n
-        "AAPL,device-internal", 0x02,\n
-        "built-in", Buffer() { 0x01 }\n
-    })\n
+	If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+	Return (Package()\n
+	{\n
+		"AAPL,clock-id", Buffer() { 0x01 },\n
+		"AAPL,current-available", 0x0834,\n
+		"AAPL,current-extra", 0x0A8C,\n
+		"AAPL,current-extra-in-sleep", 0x0834,\n
+		"AAPL,current-in-sleep", 0x03E8,\n
+		"AAPL,max-port-current-in-sleep", 0x0A8C,\n
+		"AAPL,device-internal", 0x02,\n
+		"built-in", Buffer() { 0x01 },\n
+	})\n
 }\n
 end;
 
@@ -314,18 +311,18 @@ into method label _DSM parent_label XHC remove_entry;
 into device label XHC insert begin
 Method (_DSM, 4, NotSerialized)\n
 {\n
-    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
-    Return (Package()\n
-    {\n
-        "AAPL,clock-id", Buffer() { 0x02 },\n
-        "AAPL,current-available", 0x0834,\n
-        "AAPL,current-extra", 0x0A8C,\n
-        "AAPL,current-extra-in-sleep", 0x0834,\n
-        "AAPL,current-in-sleep", 0x03E8,\n
-        "AAPL,max-port-current-in-sleep", 0x0A8C,\n
-        "AAPL,device-internal", 0x02,\n
-        "built-in", Buffer() { 0x01 }\n
-    })\n
+	If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+	Return (Package()\n
+	{\n
+		"AAPL,clock-id", Buffer() { 0x02 },\n
+		"AAPL,current-available", 0x0834,\n
+		"AAPL,current-extra", 0x0A8C,\n
+		"AAPL,current-extra-in-sleep", 0x0834,\n
+		"AAPL,current-in-sleep", 0x03E8,\n
+		"AAPL,max-port-current-in-sleep", 0x0A8C,\n
+		"AAPL,device-internal", 0x02,\n
+		"built-in", Buffer() { 0x01 },\n
+	})\n
 }\n
 end;
 
@@ -352,63 +349,63 @@ into method label _DSM parent_adr 0x00010000 remove_entry;
 into device name_adr 0x00010000 insert begin
 Device (GFX0)\n
 {\n
-    Name (_ADR, Zero)\n
-    Method (_DSM, 4, NotSerialized)\n
-    {\n
-	    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
-	    Return (Package()\n
-        {\n
-            "@0,AAPL,boot-display", Buffer (Zero) {},\n
-            "@0,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
-            "@1,AAPL,boot-display", Buffer (Zero) {},\n
-            "@1,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
-            "@2,AAPL,boot-display", Buffer (Zero) {},\n
-            "@2,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
-            "@3,AAPL,boot-display", Buffer (Zero) {},\n
-            "@3,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
-            "hda-gfx", Buffer() { "onboard-2" }\n
-	    })\n
-    }\n
+Name (_ADR, Zero)\n
+Method (_DSM, 4, NotSerialized)\n
+{\n
+	If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+	Return (Package()\n
+	{\n
+		"@0,AAPL,boot-display", Buffer (Zero) {},\n
+		"@0,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
+		"@1,AAPL,boot-display", Buffer (Zero) {},\n
+		"@1,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
+		"@2,AAPL,boot-display", Buffer (Zero) {},\n
+		"@2,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
+		"@3,AAPL,boot-display", Buffer (Zero) {},\n
+		"@3,connector-type", Buffer() { 0x00, 0x08, 0x00, 0x00 },\n
+		"hda-gfx", Buffer() { "onboard-2" }\n
+	})\n
+}\n
 }\n
 Device (HDAU)\n
 {\n
-    Name (_ADR, One)\n
-    Method (_DSM, 4, NotSerialized)\n
-    {\n
-	    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
-	    Return (Package()\n
-        {\n
-            "hda-gfx", Buffer() { "onboard-2" }\n
-	    })\n
-    }\n
+Name (_ADR, One)\n
+Method (_DSM, 4, NotSerialized)\n
+{\n
+	If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+	Return (Package()\n
+	{\n
+		"hda-gfx", Buffer() { "onboard-2" }\n
+	})\n
+}\n
 }\n
 end;
 
 # Add Airplay Display Support
 into method label _DSM parent_adr 0x00020000 remove_entry;
 into device name_adr 0x00020000 insert begin
-    Method (_DSM, 4, NotSerialized)\n
-    {\n
-	    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
-	    Return (Package()\n
-	    {\n
-            "AAPL,ig-platform-id", Buffer() { 0x07, 0x00, 0x62, 0x01 },\n
-            "device-id", Buffer() { 0x66, 0x01, 0x00, 0x00 }\n
-	    })\n
-    }\n
+Method (_DSM, 4, NotSerialized)\n
+{\n
+	If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+	Return (Package()\n
+	{\n
+		"AAPL,ig-platform-id", Buffer() { 0x07, 0x00, 0x62, 0x01 },\n
+		"device-id", Buffer() { 0x66, 0x01, 0x00, 0x00 }\n
+	})\n
+}\n
 end;
 
 # Add Layout-ID 3 Audio Support
 into method label _DSM parent_adr 0x001B0000 remove_entry;
 into device name_adr 0x001B0000 insert begin
-    Method (_DSM, 4, NotSerialized)\n
-    {\n
-	    If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
-	    Return (Package()\n
-	    {\n
-            "layout-id", Buffer() { 0x03, 0x00, 0x00, 0x00 },\n
-            "MaximumBootBeepVolume", Buffer (One) { 0x4D },\n
-            "PinConfigurations", Buffer(Zero) {}\n
-	    })\n
-    }\n
+Method (_DSM, 4, NotSerialized)\n
+{\n
+	If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }\n
+	Return (Package()\n
+	{\n
+		"layout-id", Buffer() { 0x03, 0x00, 0x00, 0x00 },\n
+		"MaximumBootBeepVolume", Buffer (One) { 0x4D },\n
+		"PinConfigurations", Buffer(Zero) {}\n
+	})\n
+}\n
 end
