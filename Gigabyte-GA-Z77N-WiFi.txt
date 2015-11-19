@@ -70,7 +70,7 @@ into_all all code_regex pnp0c14 replaceall_matched begin PNP0C14 end;
 into_all all code_regex If\s\(TCMF\)\s\{\} replace_matched begin 
 If (TCMF)\n
 {\n
-	Return (Zero)\n
+Return (Zero)\n
 }\n
 end;
 
@@ -78,8 +78,7 @@ end;
 into device label SIO1 code_regex 0x00(,\s+//\s+L) replaceall_matched begin 0x01%1 end;
 
 # Fix IO (Decode…_length_0
-into_all all code_regex 0x00,(\s+)//\sLength replaceall_matched begin 0x01,%1// Length
-end;
+into_all all code_regex 0x00,(\s+)//\sLength replaceall_matched begin 0x01,%1// Length end;
 
 # Fix the 'Possible operator timeout is ignored' error
 into_all all code_regex (Acquire\s\(....,\s0x)....\) replace_matched begin %1FFFF) end;
@@ -164,17 +163,15 @@ end;
 # Fix HPET
 into method label _STA parent_hid PNP0103 remove_entry;
 into device name_hid PNP0103 code_regex Name\s\(_STA\,\s+0x0F\) remove_matched;
-into device name_hid PNP0103 insert
-begin
+into device name_hid PNP0103 insert begin
 Name (_STA, 0x0F)\n
 end;
 
 into method label _CRS parent_hid PNP0103 remove_entry;
-into device name_hid PNP0103 insert
-begin
+into device name_hid PNP0103 insert begin
 Method (_CRS, 0, NotSerialized)\n
 {\n
-Return (BUF0)\n
+	Return (BUF0)\n
 }\n
 end;
 
@@ -214,33 +211,33 @@ into method label DTGP remove_entry;
 into definitionblock code_regex . insert begin
 Method (DTGP, 5, NotSerialized)\n
 {\n
-If (LEqual (Arg0, Buffer (0x10)\n
-{\n
-/* 0000 */    0xC6, 0xB7, 0xB5, 0xA0, 0x18, 0x13, 0x1C, 0x44,\n
-/* 0008 */    0xB0, 0xC9, 0xFE, 0x69, 0x5E, 0xAF, 0x94, 0x9B\n
-}))\n
-{\n
-If (LEqual (Arg1, One))\n
-{\n
-If (LEqual (Arg2, Zero))\n
-{\n
-Store (Buffer (One)\n
-{\n
-0x03\n
-}, Arg4)\n
-Return (One)\n
-}\n
-If (LEqual (Arg2, One))\n
-{\n
-Return (One)\n
-}\n
-}\n
-}\n
-Store (Buffer (One)\n
-{\n
-0x00\n
-}, Arg4)\n
-Return (Zero)\n
+        If (LEqual (Arg0, Buffer (0x10)\n
+                {\n
+                    /* 0000 */    0xC6, 0xB7, 0xB5, 0xA0, 0x18, 0x13, 0x1C, 0x44,\n
+                    /* 0008 */    0xB0, 0xC9, 0xFE, 0x69, 0x5E, 0xAF, 0x94, 0x9B\n
+                }))\n
+        {\n
+            If (LEqual (Arg1, One))\n
+            {\n
+                If (LEqual (Arg2, Zero))\n
+                {\n
+                    Store (Buffer (0x01)\n
+                        {\n
+                            0x03\n
+                        }, Arg4)\n
+                    Return (One)\n
+                }\n
+                If (LEqual (Arg2, One))\n
+                {\n
+                    Return (One)\n
+                }\n
+            }\n
+        }\n
+        Store (Buffer (0x01)\n
+            {\n
+                0x00\n
+            }, Arg4)\n
+	Return (Zero)\n
 }\n
 end;
 
