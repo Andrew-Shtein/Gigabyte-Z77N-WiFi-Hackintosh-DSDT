@@ -322,6 +322,9 @@ Method (_DSM, 4, NotSerialized)\n
 }\n
 end;
 
+# Simulate Windows 2012
+into_all method code_regex If\s+\([\\]?_OSI\s+\(\"Windows\s2012\"\)\) replace_matched begin If(LOr(_OSI("Darwin"),_OSI("Windows 2012"))) end;
+
 # Remove PEGP
 into device label PEGP remove_entry;
 into scope label _SB.PCI0.PEG0.PEGP remove_entry;
