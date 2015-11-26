@@ -1,15 +1,22 @@
 Gigabyte GA-Z77N-WiFi Hackintosh DSDT Patch by Mrengles
 
-This DSDT patch with the right Clover EFI Bootloader configuration and SSDT should produce a fully compatible Hackintosh running OS X Mavericks, Yosemite or El Capitan.
+This DSDT patch with the right Clover (or Ozmosis) Bootloader configuration and SSDT should produce a fully compatible Hackintosh running OS X Mavericks, Yosemite or El Capitan.
 
 Included Patches:
 
-1. Fixes All Errors & Warnings
-2. Toleda HDMI Audio with Layout-ID 3
-3. MCHC
-4. LPC
-5. RTC
-6. SBUS with BUS0 and BUS1 (Built-in Serial Port Support)
+1. Fix Errors & Warnings
+2. Add HDMI Audio (Layout-ID 3 by Toleda)
+3. Add MCHC
+4. Add IMEI
+5. Fix LPC
+6. Fix HPET
+7. Fix IRQ
+8. Fix Mutex
+9. Fix PNOT/PPNT/PNTF
+10. Fix USB (2.0 & 3.0)
+11. Simulate Windows 2012
+12. Add SMBUS (BUS1 & BUS2)
+13. Add DTGP
 
 Apply the patch to your extracted DSDT with MaciASL.
 
